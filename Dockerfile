@@ -13,4 +13,4 @@ WORKDIR /root
 COPY warp.sh /root/
 RUN mkdir -p /root/.local/share/warp/
 RUN echo "yes" > /root/.local/share/warp/accepted-tos.txt
-CMD bash warp.sh $PROXY_PORT
+CMD bash warp.sh  --port $PROXY_PORT
