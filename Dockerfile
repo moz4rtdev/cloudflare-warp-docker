@@ -8,9 +8,10 @@ RUN curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor
     && apt-get update && apt-get install cloudflare-warp -y
 
 ENV PROXY_PORT=40000
+ENV OPTION=--PORT
 
 WORKDIR /root
 COPY warp.sh /root/
 RUN mkdir -p /root/.local/share/warp/
 RUN echo "yes" > /root/.local/share/warp/accepted-tos.txt
-CMD bash warp.sh  --port $PROXY_PORT
+CMD bash warp.sh $OPTION $PROXY_PORT
