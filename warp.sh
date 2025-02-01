@@ -28,23 +28,24 @@ docker_start(){
 }
 
 test_ip(){
+  echo "PORT-IP"
   for (( i=1; i<=$2; i++ ));do
     PORT=$((40000 + i))
     PROXY="socks5://localhost:$PORT"
-    IP=$(curl --proxy $PROXY https://ifconfig.me)
-    echo -e "PORT-IP\n$PORT - $IP"
+    IP=$(curl --proxy $PROXY https://ifconfig.me 2>/dev/null)
+    echo -e "$PORT - $IP"
   done  
 }
 
-if [[ $1 == "--port" ]];then
+if [[ $1 == "port" ]];then
   warp_proxy $@
-elif [[ $1 == "--docker" ]];then
+elif [[ $1 == "docker" ]];then
   docker_start $@
-elif [[ $1 == "--test" ]];then
+elif [[ $1 == "test" ]];then
   test_ip $@
-elif [[ $1 == "--connect" ]];then
+elif [[ $1 == "connect" ]];then
   warp_connect
-elif [[ $1 == "--open" ]];then
+elif [[ $1 == "open" ]];then
   docker run --privileged -it -e OPTION=NONE --rm warp-proxy
 elif [[ $1 == "NONE" ]];then
   bash
