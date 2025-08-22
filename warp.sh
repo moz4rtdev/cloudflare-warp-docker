@@ -1,53 +1,38 @@
 #!/bin/bash
-warp_proxy(){
+proxy_ipv4(){
   nohup warp-svc &
   sleep 2
   warp-cli registration new
   warp-cli mode proxy
-  warp-cli proxy port $2
+  warp-cli proxy port $PORT
   warp-cli connect
   tail -f /dev/null
 }
 
-warp_connect(){
+proxy_ipv6(){
+  nohup warp-svc &
+  sleep 4
+  warp-cli registration new
+  warp-cli connect
+  cat tinyproxy.conf | sed "s/Port 8888/Port $PORT/g" > /etc/tinyproxy/tinyproxy.conf
+  tinyproxy
+  tail -f /dev/null
+}
+
+connect(){
   nohup warp-svc &
   sleep 2
   warp-cli registration new
   warp-cli connect
 }
 
-docker_start(){
-  for (( i=1; i<=$2; i++ ));do
-    PORT=$((40000 + i));
-    NAME="proxy$i";
-    docker rm proxy$i &> /dev/null
-    docker run -d -e PROXY_PORT=$PORT --network host --name $NAME warp-proxy &> /dev/null
-    echo -e "PROXY => socks5://localhost:$PORT"
-    sleep 1
-  done
-}
-
-test_ip(){
-  echo "PORT-IP"
-  for (( i=1; i<=$2; i++ ));do
-    PORT=$((40000 + i))
-    PROXY="socks5://localhost:$PORT"
-    IP=$(curl --proxy $PROXY https://ifconfig.me 2>/dev/null)
-    echo -e "$PORT - $IP"
-  done  
-}
-
-if [[ $1 == "port" ]];then
-  warp_proxy $@
-elif [[ $1 == "docker" ]];then
-  docker_start $@
-elif [[ $1 == "test" ]];then
-  test_ip $@
-elif [[ $1 == "connect" ]];then
-  warp_connect
-elif [[ $1 == "open" ]];then
-  docker run --privileged -it -e OPTION=NONE --rm warp-proxy
-elif [[ $1 == "NONE" ]];then
+if [[ $MODE == "ipv4" ]];then
+  proxy_ipv4
+elif [[ $MODE == "ipv6" ]];then
+  proxy_ipv6
+elif [[ $MODE == "connect" ]];then
+  connect
+elif [[ $MODE == "none" ]];then
   bash
 else
   echo -e "\033[01;91mINVALID ARGUMENT\033[m"
