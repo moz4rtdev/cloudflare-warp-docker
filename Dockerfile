@@ -16,4 +16,4 @@ RUN echo "yes" > /root/.local/share/warp/accepted-tos.txt
 ENV MODE=ipv4
 ENV PORT=3128
 
-ENTRYPOINT ["warp.sh"]
+ENTRYPOINT ["/root/warp.sh"]
