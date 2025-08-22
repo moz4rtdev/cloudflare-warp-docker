@@ -1,4 +1,5 @@
 # cloudflare-warp-docker
+This repository contains the configuration to run cloudflare-warp with docker and even turn it into a proxy accessible on the host machine.
 
 ## Build
 ```bash
